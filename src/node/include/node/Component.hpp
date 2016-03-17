@@ -1,4 +1,11 @@
-﻿#ifndef COMPONENT_HPP
+﻿/** @file    Component.hpp 
+ *  @author  William Emfinger
+ *  @author  Pranav Srinivas Kumar
+ *  @date    <%- Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') %>
+ *  @brief   This file declares the Component class
+ */
+
+#ifndef COMPONENT_HPP
 #define COMPONENT_HPP
 
 #include <iostream>
@@ -17,35 +24,60 @@
   #endif
 #endif
 
+/**
+ * @brief Component class
+ */
 class Component {
 public:
-  // Constructor
+  /**
+   * @brief Component Constructor.
+   * @param _config Component configuration parsed from deployment XML
+   * @param[in] argc command-line argument count
+   * @param[in] argv command-line arguments of the actor process
+   */
   Component(ComponentConfig &_config, int argc, char **argv);
 
-  // Start up
+  /**
+   * @brief Component startup function
+   *
+   * This function configures all the component ports and timers
+   */ 
   virtual void startUp() = 0;
 
-  // Initialization
+  /**
+   * @brief Component Initializer
+   * This operation is executed immediately after startup.
+   * @param[in] event a oneshot timer event
+   * @see startUp()
+   */
   virtual void init_timer_operation(const NAMESPACE::TimerEvent& event);
 
-  // Synchronization
+  /**
+   * @brief Component Synchronization
+   * This operation establishing a sync point with other components
+   * @param[in] received_data Notification message from other components
+   */
   virtual void component_sync_operation(const std_msgs::Bool::ConstPtr& received_data);
 
-  // Callback Queue Handler
+  /**
+   * @brief Component Message Queue handler
+   */
   void process_queue();
 
-  // Destructor
+  /**
+   * @brief Component Destructor
+   */
   ~Component();
 
 protected:
-  ComponentConfig config;
-  int node_argc;
-  char **node_argv;
-  NAMESPACE::Publisher comp_sync_pub;
-  NAMESPACE::Subscriber comp_sync_sub;
-  NAMESPACE::Timer init_timer;
-  NAMESPACE::CallbackQueue comp_queue;
-  std::unique_ptr<Logger> logger;
+  ComponentConfig config;                /*!< Component Configuration */
+  int node_argc;                         /*!< argc received by the actor process */
+  char **node_argv;                      /*!< argv received by the actor process */
+  NAMESPACE::Publisher comp_sync_pub;    /*!< Synchronization publisher */
+  NAMESPACE::Subscriber comp_sync_sub;   /*!< Synchronization subscriber */
+  NAMESPACE::Timer init_timer;           /*!< Initialization timer */
+  NAMESPACE::CallbackQueue comp_queue;   /*!< Component Message Queue */
+  std::unique_ptr<Logger> logger;        /*!< Component logger object */
 };
 
 #endif

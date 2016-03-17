@@ -1,3 +1,9 @@
+/** @file    node_main.cpp 
+ *  @author  William Emfinger
+ *  @date    <%- Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') %>
+ *  @brief   This file contains the main function for a ROSMOD actor/node.
+ */
+
 #include <cstdlib>
 #include <string.h>
 #include <dlfcn.h>
@@ -25,6 +31,10 @@ void componentThreadFunc(Component* compPtr)
 
 std::vector<boost::thread*> compThreads;	
 
+/**
+ * @brief Parses node configuration and spawns component executor threads.
+ *
+ */
 int main(int argc, char **argv)
 {
   std::string nodeName = "node";

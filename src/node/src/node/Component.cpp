@@ -1,3 +1,10 @@
+/** @file    Component.cpp 
+ *  @author  William Emfinger
+ *  @author  Pranav Srinivas Kumar
+ *  @date    <%- Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') %>
+ *  @brief   This file contains definitions for the base Component class
+ */
+
 #include "node/Component.hpp"
 
 // Constructor
