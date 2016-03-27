@@ -37,7 +37,7 @@ public:
   std::vector<ComponentConfig> compConfigList;
   std::vector<std::string> libList;
   std::string nodeName;
-  int node_priority = -1;
+  int node_priority;
 
   bool Return_Boolean(std::string value) { return (value == "True"); }
 
