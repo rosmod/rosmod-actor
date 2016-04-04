@@ -24,10 +24,6 @@ Component::~Component() {
 // Initialization
 void Component::init_timer_operation(const NAMESPACE::TimerEvent& event) {}
 
-// Synchronization
-void Component::component_sync_operation(const std_msgs::Bool::ConstPtr& 
-     received_data) {}
-
 // Component Operation Queue Handler
 void Component::process_queue() {  
   NAMESPACE::NodeHandle nh;
