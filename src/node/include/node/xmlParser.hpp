@@ -20,8 +20,6 @@ public:
   std::string nodeName;
   std::string compName;
   std::map<std::string,std::string> portGroupMap;
-  uint64_t num_comps_to_sync;
-  double comp_sync_timeout;
   std::map<std::string,uint64_t> uuidMap;
   std::map<std::string,std::string> profileMap;
   std::map<std::string,std::map<uint64_t,std::string>> portSenderMap;
@@ -86,19 +84,9 @@ public:
 	 comp_inst; comp_inst = comp_inst->next_sibling("component_instance"))
       {
 	ComponentConfig config;
-	config.num_comps_to_sync = 1;
-	config.comp_sync_timeout = 1.0;
 	config.compName = comp_inst->first_attribute()->value();
 	config.nodeName = nodeName;
 
-	xml_node<> *nCompsSync = comp_inst->first_node("numCompsToSync");
-	if (nCompsSync != NULL)
-	  config.num_comps_to_sync = atoi(nCompsSync->first_attribute()->value());
-	
-	xml_node<> *syncTimeout = comp_inst->first_node("syncTimeout");
-	if (syncTimeout != NULL)
-	  config.comp_sync_timeout = atof(syncTimeout->first_attribute()->value());
-	
 	for (xml_node<> *port = comp_inst->first_node("port");
 	     port; port = port->next_sibling("port"))
 	  {
