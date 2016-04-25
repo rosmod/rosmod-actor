@@ -51,13 +51,6 @@ public:
   virtual void init_timer_operation(const NAMESPACE::TimerEvent& event);
 
   /**
-   * @brief Component Synchronization
-   * This operation establishing a sync point with other components
-   * @param[in] received_data Notification message from other components
-   */
-  virtual void component_sync_operation(const std_msgs::Bool::ConstPtr& received_data);
-
-  /**
    * @brief Component Message Queue handler
    */
   void process_queue();
@@ -71,8 +64,6 @@ protected:
   Json::Value config;                    /*!< Component Configuration */
   int node_argc;                         /*!< argc received by the actor process */
   char **node_argv;                      /*!< argv received by the actor process */
-  NAMESPACE::Publisher comp_sync_pub;    /*!< Synchronization publisher */
-  NAMESPACE::Subscriber comp_sync_sub;   /*!< Synchronization subscriber */
   NAMESPACE::Timer init_timer;           /*!< Initialization timer */
   NAMESPACE::CallbackQueue comp_queue;   /*!< Component Message Queue */
   std::unique_ptr<Logger> logger;        /*!< Component logger object */
