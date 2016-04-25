@@ -11,8 +11,8 @@
 #include <iostream>
 #include <string>
 #include <std_msgs/Bool.h>
-#include "node/xmlParser.hpp"
 #include "node/Logger.hpp"
+#include "json/json.h"
 
 #ifdef USE_ROSMOD
   #include "rosmod/rosmod_ros.h"
@@ -31,11 +31,9 @@ class Component {
 public:
   /**
    * @brief Component Constructor.
-   * @param _config Component configuration parsed from deployment XML
-   * @param[in] argc command-line argument count
-   * @param[in] argv command-line arguments of the actor process
+   * @param[in] _config Component configuration parsed from deployment JSON
    */
-  Component(ComponentConfig &_config, int argc, char **argv);
+  Component(Json::Value& _config);
 
   /**
    * @brief Component startup function
@@ -70,7 +68,7 @@ public:
   ~Component();
 
 protected:
-  ComponentConfig config;                /*!< Component Configuration */
+  Json::Value config;                    /*!< Component Configuration */
   int node_argc;                         /*!< argc received by the actor process */
   char **node_argv;                      /*!< argv received by the actor process */
   NAMESPACE::Publisher comp_sync_pub;    /*!< Synchronization publisher */

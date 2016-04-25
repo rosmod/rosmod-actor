@@ -175,7 +175,8 @@ include_directories(
 include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(node_main
 	       src/node/node_main.cpp
-               src/node/Component.cpp)
+               src/node/Component.cpp
+	       src/node/jsoncpp.cpp)
 target_link_libraries(node_main dl ${catkin_LIBRARIES})
 
 

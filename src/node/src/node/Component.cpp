@@ -8,11 +8,9 @@
 #include "node/Component.hpp"
 
 // Constructor
-Component::Component(ComponentConfig &_config, int argc, char **argv) {
+Component::Component(Json::Value& _config) {
   logger.reset(new Logger());
   config = _config;
-  node_argc = argc;
-  node_argv = argv;
 }
 
 // Destructor
