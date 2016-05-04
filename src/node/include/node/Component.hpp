@@ -58,12 +58,10 @@ public:
   /**
    * @brief Component Destructor
    */
-  ~Component();
+  virtual ~Component();
 
 protected:
   Json::Value config;                    /*!< Component Configuration */
-  int node_argc;                         /*!< argc received by the actor process */
-  char **node_argv;                      /*!< argv received by the actor process */
   NAMESPACE::Timer init_timer;           /*!< Initialization timer */
   NAMESPACE::CallbackQueue comp_queue;   /*!< Component Message Queue */
   std::unique_ptr<Logger> logger;        /*!< Component logger object */
