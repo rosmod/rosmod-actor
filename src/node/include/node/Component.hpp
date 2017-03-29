@@ -61,10 +61,11 @@ public:
   virtual ~Component();
 
 protected:
-  Json::Value config;                    /*!< Component Configuration */
-  NAMESPACE::Timer init_timer;           /*!< Initialization timer */
-  NAMESPACE::CallbackQueue comp_queue;   /*!< Component Message Queue */
-  std::unique_ptr<Logger> logger;        /*!< Component logger object */
+  Json::Value              config;      /*!< Component Configuration */
+  NAMESPACE::Timer         init_timer;  /*!< Initialization timer */
+  NAMESPACE::CallbackQueue comp_queue;  /*!< Component Message Queue */
+  std::unique_ptr<Logger>  logger;      /*!< Component logger object */
+  std::string              workingDir;  /*!< Working directory of the process */
 };
 
 #endif

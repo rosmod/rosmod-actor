@@ -11,6 +11,26 @@
 Component::Component(Json::Value& _config) {
   logger.reset(new Logger());
   config = _config;
+
+  // Identify the pwd of Node Executable
+  char szTmp[32];
+  char pBuf[1024];
+  memset(pBuf, 0, 1024);
+  sprintf(szTmp, "/proc/%d/exe", getpid());
+  readlink(szTmp, pBuf, 1024);
+
+  std::string s = pBuf;
+  std::string exec_path = s;
+  std::string delimiter = "/";
+  std::string exec;
+  size_t pos = 0;
+  while ((pos = s.find(delimiter)) != std::string::npos) {
+    exec = s.substr(0, pos);
+    s.erase(0, pos + delimiter.length());
+  }
+  exec = s.substr(0, pos);
+  // now copy the found directory to the component's workingDir variable
+  workingDir = exec_path.erase(exec_path.find(exec), exec.length());
 }
 
 // Destructor
