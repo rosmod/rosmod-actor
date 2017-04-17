@@ -11,20 +11,14 @@
 #include <cstdlib>        
 #include <signal.h>
 #include <boost/thread.hpp>
-#include "node/Component.hpp"
+#include "rosmod_actor/Component.hpp"
 #include "json/json.h"
 #include "pthread.h"
 #include "sched.h"
 #include <iostream>
 #include <fstream>
 
-#ifdef USE_ROSMOD
-  #include "rosmod/rosmod_ros.h"
-#else
-  #ifdef USE_ROSCPP
-    #include "ros/ros.h"
-  #endif
-#endif
+#include "rosmod/rosmod_ros.h"
 
 void componentThreadFunc(Component* compPtr)
 {
@@ -34,35 +28,50 @@ void componentThreadFunc(Component* compPtr)
 
 std::vector<boost::thread*> compThreads;	
 
+void printHelp() {
+  ROS_INFO_STREAM("\nUsage:  rosmod_actor\n" <<
+		  "\t--config <json config file>\n" <<
+		  "\t--help   (show this help and exit)");
+}
+
 /**
  * @brief Parses node configuration and spawns component executor threads.
  *
  */
 int main(int argc, char **argv)
 {
-  std::string nodeName = "node";
-  std::string hostName = "localhost";
+  std::string nodeName = "";
   std::string configFile = "";
 
   for(int i = 0; i < argc; i++)
   {
-    if(!strcmp(argv[i], "--nodename"))
-      nodeName = argv[i+1];
-    if(!strcmp(argv[i], "--hostname"))
-      hostName = argv[i+1];
     if(!strcmp(argv[i], "--config"))
       configFile = argv[i+1];
+    if(!strcmp(argv[i], "--help")) {
+      printHelp();
+      return 0;
+    }
   }
+
+  if (argc == 0 || !configFile.length()) {
+    ROS_ERROR_STREAM("No config file provided!");
+    printHelp();
+    return 0;
+  }
+
 
   Json::Value root;
-  std::ifstream configuration(configFile, std::ifstream::binary);
-  configuration >> root;
-
-  std::cout << "Root Node name: " << root["Name"].asString() << std::endl;
-  std::cout << "Root Node priority: " << root["Priority"].asInt() << std::endl;
-  for (unsigned int i = 0; i < root["Component Instances"].size(); i++) {
-    std::cout << root["Component Instances"][i]["Logging"]["Enabled"].asBool() << std::endl;
+  try {
+    std::ifstream configuration(configFile, std::ifstream::binary);
+    configuration >> root;
+  } catch (std::exception& e) {
+    ROS_ERROR_STREAM( std::string("Exception caught trying to open / parse config file: ") << e.what() );
+  } catch ( ... ) {
+    ROS_ERROR_STREAM("Unhandled exception caught trying to open / parse config file!");
   }
+
+  ROS_INFO_STREAM( std::string("Root Node name: ") << root["Name"].asString() << std::endl);
+  ROS_INFO_STREAM( std::string("Root Node priority: ") << root["Priority"].asInt() << std::endl);
 
   int ret;
   pthread_t this_thread = pthread_self(); 
@@ -74,32 +83,32 @@ int main(int argc, char **argv)
   if (params.sched_priority < 0)
     params.sched_priority = sched_get_priority_max(SCHED_RR);
 
-  std::cout << "Trying to set thread realtime prio = " << 
-    params.sched_priority << std::endl; 
+  ROS_INFO_STREAM("Trying to set thread realtime prio = " << 
+		  params.sched_priority << std::endl);
      
   // Attempt to set thread real-time priority to the SCHED_FIFO policy     
   ret = pthread_setschedparam(this_thread, SCHED_RR, &params);     
   if (ret != 0)
-    std::cout << "Unsuccessful in setting thread realtime prio" << std::endl;
+    ROS_ERROR_STREAM("Unsuccessful in setting thread realtime prio" << std::endl);
 
   // Now verify the change in thread priority     
   int policy = 0;     
-  ret = pthread_getschedparam(this_thread, &policy, &params);     
+  ret = pthread_getschedparam(this_thread, &policy, &params);
   if (ret != 0)          
-    std::cout << "Couldn't retrieve real-time scheduling paramers" << std::endl;      
+    ROS_ERROR_STREAM("Couldn't retrieve real-time scheduling paramers" << std::endl);
   // Check the correct policy was applied     
-  if(policy != SCHED_RR)         
-    std::cout << "Scheduling is NOT SCHED_RR!" << std::endl;     
+  if(policy != SCHED_RR)
+    ROS_ERROR_STREAM("Scheduling is NOT SCHED_RR!" << std::endl);
   else
-    std::cout << "SCHED_RR OK" << std::endl;     
+    ROS_INFO_STREAM("SCHED_RR OK" << std::endl);
   // Print thread scheduling priority     
-  std::cout << "Thread priority is " << params.sched_priority << std::endl;
+  ROS_INFO_STREAM("Thread priority is " << params.sched_priority << std::endl);
 
   nodeName = root["Name"].asString();
-  NAMESPACE::init(argc, argv, nodeName.c_str());
+  rosmod::init(argc, argv, nodeName.c_str());
 
   // Create Node Handle
-  NAMESPACE::NodeHandle n;
+  rosmod::NodeHandle n;
 
   ROS_INFO_STREAM(nodeName << " thread id = " << boost::this_thread::get_id());
     

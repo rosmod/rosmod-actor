@@ -1,7 +1,7 @@
 ﻿/** @file    Component.hpp 
  *  @author  William Emfinger
  *  @author  Pranav Srinivas Kumar
- *  @date    <%- Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') %>
+ *  @date    2017-04-17
  *  @brief   This file declares the Component class
  */
 
@@ -11,18 +11,11 @@
 #include <iostream>
 #include <string>
 #include <std_msgs/Bool.h>
-#include "node/Logger.hpp"
-#include "json/json.h"
+#include "rosmod_component/Logger.hpp"
+#include "rosmod_jsoncpp/json.h"
 
-#ifdef USE_ROSMOD
-  #include "rosmod/rosmod_ros.h"
-  #include "rosmod/rosmod_callback_queue.h"
-#else
-  #ifdef USE_ROSCPP
-    #include "ros/ros.h"
-    #include "ros/callback_queue.h"
-  #endif
-#endif
+#include "rosmod/rosmod_ros.h"
+#include "rosmod/rosmod_callback_queue.h"
 
 /**
  * @brief Component class
@@ -48,7 +41,7 @@ public:
    * @param[in] event a oneshot timer event
    * @see startUp()
    */
-  virtual void init_timer_operation(const NAMESPACE::TimerEvent& event);
+  virtual void init_timer_operation(const rosmod::TimerEvent& event);
 
   /**
    * @brief Component Message Queue handler
@@ -62,8 +55,8 @@ public:
 
 protected:
   Json::Value              config;      /*!< Component Configuration */
-  NAMESPACE::Timer         init_timer;  /*!< Initialization timer */
-  NAMESPACE::CallbackQueue comp_queue;  /*!< Component Message Queue */
+  rosmod::Timer            init_timer;  /*!< Initialization timer */
+  rosmod::CallbackQueue    comp_queue;  /*!< Component Message Queue */
   std::unique_ptr<Logger>  logger;      /*!< Component logger object */
   std::string              workingDir;  /*!< Working directory of the process */
 };

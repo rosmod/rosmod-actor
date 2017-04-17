@@ -1,8 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <package>
-  <name>node</name>
+  <name>rosmod_component</name>
   <version>0.0.0</version>
-  <description>The node package</description>
+  <description>The rosmod component library</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -40,8 +40,10 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rosmod_jsoncpp</build_depend>
   <build_depend>rosmod</build_depend>
   <build_depend>std_msgs</build_depend>
+  <run_depend>rosmod_jsoncpp</run_depend>
   <run_depend>rosmod</run_depend>
   <run_depend>std_msgs</run_depend>
 

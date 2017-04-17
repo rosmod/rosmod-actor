@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(node)
+project(rosmod_actor)
 
 ## Check C++11 / C++0x
 include(CheckCXXCompilerFlag)
@@ -14,15 +14,9 @@ else()
 endif()
 
 
-ADD_DEFINITIONS(-DNAMESPACE=${NAMESPACE})
-MESSAGE(STATUS ${NAMESPACE})
-if (${NAMESPACE} STREQUAL "rosmod")
-  find_package(catkin REQUIRED COMPONENTS rosmod std_msgs)
-  ADD_DEFINITIONS(-DUSE_ROSMOD)
-ELSEIF(${NAMESPACE} STREQUAL "ros")
-  find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
-  ADD_DEFINITIONS(-DUSE_ROSCPP)
-ENDIF()
+ADD_DEFINITIONS(-DNAMESPACE=rosmod)
+find_package(catkin REQUIRED COMPONENTS rosmod rosmod_component std_msgs)
+ADD_DEFINITIONS(-DUSE_ROSMOD)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -90,10 +84,8 @@ ENDIF()
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES node
 #  CATKIN_DEPENDS roscpp std_msgs
-  CATKIN_DEPENDS message_runtime
+  CATKIN_DEPENDS rosmod rosmod_component rosmod_jsoncpp message_runtime
 #  DEPENDS system_lib
 )
 
@@ -172,21 +164,14 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-include_directories(include ${catkin_INCLUDE_DIRS})
-add_executable(node_main
-	       src/node/node_main.cpp
-               src/node/Component.cpp
-	       src/node/jsoncpp.cpp)
-target_link_libraries(node_main dl ${catkin_LIBRARIES})
 
-
-
-
-
-
-
-
-
-
-
+# make rosmod_actor executable
+add_executable(rosmod_actor
+	       src/rosmod_actor/main.cpp)
+target_link_libraries(rosmod_actor rosmod_component rosmod_jsoncpp dl ${catkin_LIBRARIES})
+# install rosmod_actor executable
+install(TARGETS rosmod_actor
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
 
