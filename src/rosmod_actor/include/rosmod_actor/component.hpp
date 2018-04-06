@@ -15,6 +15,7 @@
 #include "rosmod_actor/json.hpp"
 
 #include "ros/ros.h"
+#include "ros/callback_queue.h"
 
 /**
  * @brief Component class

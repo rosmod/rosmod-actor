@@ -43,7 +43,6 @@ include_directories(
 add_executable(rosmod_actor
   src/rosmod_actor/jsoncpp.cpp
   src/rosmod_actor/component.cpp
-  src/rosmod_actor/callback_queue.cpp
   src/rosmod_actor/main.cpp)
 target_link_libraries(rosmod_actor dl ${catkin_LIBRARIES})
 
