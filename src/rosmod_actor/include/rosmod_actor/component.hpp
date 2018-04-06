@@ -54,6 +54,7 @@ public:
   virtual void process_queue();
 
 protected:
+  ros::NodeHandle          nh_;         /*!< NodeHandle */
   Json::Value              config;      /*!< Component Configuration */
   ros::Timer               init_timer;  /*!< Initialization timer */
   ros::CallbackQueue       comp_queue;  /*!< Component Message Queue */

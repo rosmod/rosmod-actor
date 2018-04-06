@@ -32,7 +32,6 @@ Component::~Component() {
 
 // Component Operation Queue Handler
 void Component::process_queue() {  
-  ros::NodeHandle nh;
-  while (nh.ok())
+  while (nh_.ok())
     this->comp_queue.callAvailable(ros::WallDuration(0.01));
 }
