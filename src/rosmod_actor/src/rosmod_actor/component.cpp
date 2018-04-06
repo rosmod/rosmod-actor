@@ -11,6 +11,7 @@
 // Constructor
 Component::Component(Json::Value& _config) {
   logger.reset(new Logger());
+  trace.reset(new Logger());
   config = _config;
 
   // Identify the pwd of Node Executable
