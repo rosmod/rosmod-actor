@@ -1,6 +1,6 @@
 /** @brief   Logger.hpp 
  *  @author  Pranav Srinivas Kumar
- *  @date    <%- Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') %>
+ *  @date    April 01 2015
  *  @brief   This file declares the Component Logger class
  */
 
@@ -28,6 +28,7 @@ public:
   Logger() {
     logs_to_file_ = false;
     is_periodic_ = true;
+    logging_enabled_ = false;
     max_log_unit_ = 1;
     log_content_ = "=================================================================\n";
   }
@@ -57,6 +58,20 @@ public:
   }
 
   /**
+   * @brief Enable this logger
+   */
+  void enable_logging() {
+    logging_enabled_ = true;
+  }
+
+  /**
+   * @brief Disable this logger
+   */
+  void disable_logging() {
+    logging_enabled_ = false;
+  }
+
+  /**
    * @brief Writes out the remainder of the logs and closes logfile.
    */
   ~Logger() {
@@ -69,23 +84,30 @@ public:
    * @param[in] log_path path to log file.
    */
   bool create_file(std::string log_path) {
-    log_path_ = log_path;
-    log_stream_.open(log_path_, std::ios::out | std::ios::app);
-    logs_to_file_ = true;
-    return true;
+    if (logging_enabled_) {
+      log_path_ = log_path;
+      log_stream_.open(log_path_, std::ios::out | std::ios::app);
+      logs_to_file_ = true;
+      return true;
+    }
+    return false;
   }
 
   /**
    * @brief Write logged bytes to file
    */  
   bool write() {
-    if (logs_to_file_) {
-      log_stream_ << log_content_;
-      log_stream_.flush();
+    if (logging_enabled_) {
+      if (logs_to_file_) {
+	log_stream_ << log_content_;
+	log_stream_.flush();
+      }
+      else
+	printf("%s", log_content_.c_str());
+      return true;
     }
     else
-      printf("%s", log_content_.c_str());
-    return true;
+      return false;
   }
 
   /**
@@ -101,11 +123,17 @@ public:
   }
 
   /**
-   * @brief Log to file with specific log_level.
+   * @brief Log to file with specific log_level. '\n' will be appended.
+   *
    * @param[in] log_level string indicating logging level.
    * @param[in] format varargs input to logger.
+   *
+   * @detailed Log data will be formmatted according to
+   *           ROSMOD::<log_level>::<timestamp>::<log data> formatting
+   *
    */  
   bool log(std::string log_level, const char * format, ...) {
+    if (logging_enabled_) {
       va_list args;
       va_start (args, format);
       char log_entry[1024];
@@ -115,6 +143,24 @@ public:
       log_content_ += "ROSMOD::" + log_level  + "::" + clock() + 
 	"::" + log_entry_string + "\n";
       flush();
+    }
+  }
+
+  /**
+   * @brief Log to file without formatting. '\n' will be appended.
+   * @param[in] format varargs input to logger.
+   */  
+  bool raw_log(const char * format, ...) {
+    if (logging_enabled_) {
+      va_list args;
+      va_start (args, format);
+      char log_entry[1024];
+      vsprintf (log_entry, format, args);
+      std::string log_entry_string(log_entry);
+      va_end (args);
+      log_content_ += log_entry_string + "\n";
+      flush();
+    }
   }
 
   /**
@@ -139,6 +185,7 @@ private:
   std::string log_path_;                       /*!< Log file path */
   bool is_periodic_;                           /*!< Is logging periodic? */
   bool logs_to_file_;                          /*!< Is logging to file? */
+  bool logging_enabled_;                       /*!< Is this logger enabled? */
   int max_log_unit_;                           /*!< Maximum log unit in bytes */
   std::chrono::high_resolution_clock clock_;   /*!< High resolution clock */
 };

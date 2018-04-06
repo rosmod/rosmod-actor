@@ -11,11 +11,10 @@
 #include <iostream>
 #include <string>
 #include <std_msgs/Bool.h>
-#include "rosmod_component/Logger.hpp"
-#include "rosmod_jsoncpp/json.h"
+#include "rosmod_actor/logger.hpp"
+#include "rosmod_actor/json.hpp"
 
-#include "rosmod/rosmod_ros.h"
-#include "rosmod/rosmod_callback_queue.h"
+#include "ros/ros.h"
 
 /**
  * @brief Component class
@@ -27,6 +26,11 @@ public:
    * @param[in] _config Component configuration parsed from deployment JSON
    */
   Component(Json::Value& _config);
+
+  /**
+   * @brief Component Destructor
+   */
+  virtual ~Component();
 
   /**
    * @brief Component startup function
@@ -41,23 +45,19 @@ public:
    * @param[in] event a oneshot timer event
    * @see startUp()
    */
-  virtual void init_timer_operation(const rosmod::TimerEvent& event);
+  virtual void init_timer_operation(const ros::TimerEvent& event) = 0;
 
   /**
    * @brief Component Message Queue handler
    */
-  void process_queue();
-
-  /**
-   * @brief Component Destructor
-   */
-  virtual ~Component();
+  virtual void process_queue();
 
 protected:
   Json::Value              config;      /*!< Component Configuration */
-  rosmod::Timer            init_timer;  /*!< Initialization timer */
-  rosmod::CallbackQueue    comp_queue;  /*!< Component Message Queue */
+  ros::Timer               init_timer;  /*!< Initialization timer */
+  ros::CallbackQueue       comp_queue;  /*!< Component Message Queue */
   std::unique_ptr<Logger>  logger;      /*!< Component logger object */
+  std::unique_ptr<Logger>  trace;       /*!< Component trace logger object */
   std::string              workingDir;  /*!< Working directory of the process */
 };
 

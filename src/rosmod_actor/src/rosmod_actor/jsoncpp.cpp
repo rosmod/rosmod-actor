@@ -73,7 +73,7 @@ license you like.
 
 
 
-#include "rosmod_jsoncpp/json.h"
+#include "rosmod_actor/json.hpp"
 
 #ifndef JSON_IS_AMALGAMATION
 #error "Compile with -I PATH_TO_JSON_DIRECTORY"

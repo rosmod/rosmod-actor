@@ -11,14 +11,28 @@
 #include <cstdlib>        
 #include <signal.h>
 #include <boost/thread.hpp>
-#include "rosmod_actor/Component.hpp"
-#include "json/json.h"
+#include "rosmod_actor/component.hpp"
+#include "rosmod_actor/json.hpp"
 #include "pthread.h"
 #include "sched.h"
 #include <iostream>
 #include <fstream>
 
-#include "rosmod/rosmod_ros.h"
+#include "ros/ros.h"
+
+#include <signal.h>
+#include <ros/ros.h>
+#include <ros/xmlrpc_manager.h>
+
+std::vector<Component*> comp_instances;
+
+void rosmod_actor_SigInt_handler(int sig) {
+  std::cout << "Received signal: " << sig << std::endl;
+  std::cout << "Destroying " << comp_instances.size() << " components!" << std::endl;
+  for (int i=0; i < comp_instances.size(); i++) {
+    delete comp_instances[i];
+  }
+}
 
 void componentThreadFunc(Component* compPtr)
 {
@@ -105,10 +119,10 @@ int main(int argc, char **argv)
   ROS_INFO_STREAM("Thread priority is " << params.sched_priority << std::endl);
 
   nodeName = root["Name"].asString();
-  rosmod::init(argc, argv, nodeName.c_str());
-
+  ros::init(argc, argv, nodeName.c_str(), ros::init_options::NoSigintHandler);
+  signal(SIGINT, rosmod_actor_SigInt_handler);
   // Create Node Handle
-  rosmod::NodeHandle n;
+  ros::NodeHandle n;
 
   ROS_INFO_STREAM(nodeName << " thread id = " << boost::this_thread::get_id());
     
@@ -122,6 +136,8 @@ int main(int argc, char **argv)
     void *mkr = dlsym(hndl, "maker");
     Component *comp_inst = ((Component *(*)(Json::Value&))(mkr))
       (root["Component Instances"][i]);
+
+    comp_instances.push_back(comp_inst);
     
     // Create Component Threads
     boost::thread *comp_thread = new boost::thread(componentThreadFunc, comp_inst);
