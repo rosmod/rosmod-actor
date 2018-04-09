@@ -133,13 +133,15 @@ public:
 	if (logs_to_file_) {
 	  log_stream_ << log_content_;
 	  log_stream_.flush();
-	}
-	else
+	} else {
 	  printf("%s", log_content_.c_str());
+	}
+	log_content_ = "";
 	return true;
-      }
-      else
+      } else {
+	log_content_ = "";
 	return false;
+      }
     }
   }
 
@@ -151,7 +153,6 @@ public:
       std::lock_guard<std::recursive_mutex> lk(settings_mutex);
       if (is_periodic_ && size() > max_log_unit_) {
 	write();
-	log_content_ = "";
 	return true;
       }
     }
