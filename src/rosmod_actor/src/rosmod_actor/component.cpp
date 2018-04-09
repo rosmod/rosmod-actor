@@ -26,8 +26,14 @@ Component::Component(Json::Value& _config) {
 
 // Destructor
 Component::~Component() {
+  std::cout << "~Component() for " <<
+    config["Name"].asString() <<
+    " - writing out logs!" << "\n";
   comp_queue.disable();
-  init_timer.stop();
+  // make sure all user logs are written
+  logger->write();
+  // make sure all trace logs are written
+  trace->write();
 }
 
 // Component Operation Queue Handler

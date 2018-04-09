@@ -84,8 +84,16 @@ int main(int argc, char **argv)
     ROS_ERROR_STREAM("Unhandled exception caught trying to open / parse config file!");
   }
 
+  nodeName = root["Name"].asString();
+  ros::init(argc, argv, nodeName.c_str(), ros::init_options::NoSigintHandler);
+  signal(SIGINT, rosmod_actor_SigInt_handler);
+
   ROS_INFO_STREAM( std::string("Root Node name: ") << root["Name"].asString() << std::endl);
   ROS_INFO_STREAM( std::string("Root Node priority: ") << root["Priority"].asInt() << std::endl);
+
+  // Create Node Handle
+  ros::NodeHandle n;
+  ROS_INFO_STREAM(nodeName << " thread id = " << boost::this_thread::get_id());
 
   int ret;
   pthread_t this_thread = pthread_self(); 
@@ -117,14 +125,6 @@ int main(int argc, char **argv)
     ROS_INFO_STREAM("SCHED_RR OK" << std::endl);
   // Print thread scheduling priority     
   ROS_INFO_STREAM("Thread priority is " << params.sched_priority << std::endl);
-
-  nodeName = root["Name"].asString();
-  ros::init(argc, argv, nodeName.c_str(), ros::init_options::NoSigintHandler);
-  signal(SIGINT, rosmod_actor_SigInt_handler);
-  // Create Node Handle
-  ros::NodeHandle n;
-
-  ROS_INFO_STREAM(nodeName << " thread id = " << boost::this_thread::get_id());
     
   for (unsigned int i = 0; i < root["Component Instances"].size(); i++) {
     std::string libraryLocation = root["Component Instances"][i]["Definition"].asString();
